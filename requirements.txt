@@ -1,7 +1,5 @@
 streamlit
 pandas
-plotly.express
+plotly
 joblib
-RandomForestClassifier
-train_test_split
-os
+scikit-learn
