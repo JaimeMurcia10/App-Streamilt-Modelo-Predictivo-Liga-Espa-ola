@@ -1,5 +1,7 @@
 streamlit
 pandas
 plotly
-joblib
 scikit-learn
+joblib
+openpyxl
+
