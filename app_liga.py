@@ -109,7 +109,7 @@ if menu == "Lista de equipos":
 
 # ---- Opción 2: Analizar equipo
 elif menu == "Analizar equipo":
-    equipo = st.selectbox("Selecciona un equipo", equipos)
+    equipo = st.selectbox("Selecciona un equipo", equipos, key="equipo_selector")
     partidos_local = df[df["HomeTeam"] == equipo]
     partidos_visitante = df[df["AwayTeam"] == equipo]
     partidos_totales = pd.concat([partidos_local, partidos_visitante])
@@ -137,7 +137,7 @@ elif menu == "Analizar equipo":
         goles_favor = partidos_local["FTHG"].sum() + partidos_visitante["FTAG"].sum()
         goles_contra = partidos_local["FTAG"].sum() + partidos_visitante["FTHG"].sum()
 
-        # ---- Tarjetas oscuras
+        # ---- Tarjetas estilo oscuro
         st.markdown("### 📊 Resumen de rendimiento")
         card_style = """
             <div style='background:#1e1e2f;
@@ -167,7 +167,7 @@ elif menu == "Analizar equipo":
         with col6:
             st.markdown(card_style.format(titulo="🥅 Goles en contra", valor=goles_contra), unsafe_allow_html=True)
 
-        # ---- Gráfico de barras resultados (oscuro)
+        # ---- Gráfico de barras
         resultados = pd.DataFrame({
             "Resultado": ["Victorias", "Empates", "Derrotas"],
             "Cantidad": [ganados, empatados, perdidos]
@@ -177,9 +177,9 @@ elif menu == "Analizar equipo":
                     title=f"📊 Distribución de resultados de {equipo}",
                     color_discrete_sequence=px.colors.sequential.Agsunset)
         fig.update_layout(template="plotly_dark")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="bar_resultados")
 
-        # ---- Gráfico circular efectividad (oscuro)
+        # ---- Gráfico circular efectividad
         efectividad = round((ganados / len(partidos_totales)) * 100, 1)
         fig_pie = px.pie(values=[ganados, len(partidos_totales)-ganados],
                         names=["Victorias", "Otros"],
@@ -187,13 +187,13 @@ elif menu == "Analizar equipo":
                         hole=0.5,
                         color_discrete_sequence=["#00cc96", "#636efa"])
         fig_pie.update_layout(template="plotly_dark")
-        st.plotly_chart(fig_pie, use_container_width=True)
+        st.plotly_chart(fig_pie, use_container_width=True, key="pie_efectividad")
 
 # ---- Opción 3: Predecir partido
 elif menu == "Predecir partido":
-    local = st.selectbox("🏠 Equipo Local", equipos)
-    visitante = st.selectbox("🚌 Equipo Visitante", [e for e in equipos if e != local])
-    if st.button("🔮 Predecir resultado"):
+    local = st.selectbox("🏠 Equipo Local", equipos, key="local_selector")
+    visitante = st.selectbox("🚌 Equipo Visitante", [e for e in equipos if e != local], key="visitante_selector")
+    if st.button("🔮 Predecir resultado", key="btn_predecir"):
         resultado, probas = predecir_partido(local, visitante)
         st.subheader(f"📊 Predicción: {local} vs {visitante}")
         st.write("🟢 Gana local (1): {:.1f}%".format(probas[2]*100))
@@ -201,14 +201,15 @@ elif menu == "Predecir partido":
         st.write("🔴 Gana visitante (-1): {:.1f}%".format(probas[0]*100))
         st.success(f"✅ Resultado predicho: {['Visitante','Empate','Local'][resultado+1]}")
 
-        # ---- Gráfica circular de probabilidades (oscuro)
+        # ---- Gráfica circular probabilidades
         fig_pred = px.pie(values=[probas[2], probas[1], probas[0]],
                         names=["Local", "Empate", "Visitante"],
                         title="📈 Distribución de probabilidades",
                         hole=0.4,
                         color_discrete_sequence=["#00cc96", "#f5c542", "#ef553b"])
         fig_pred.update_layout(template="plotly_dark")
-        st.plotly_chart(fig_pred, use_container_width=True)
+        st.plotly_chart(fig_pred, use_container_width=True, key="pie_predicciones")
+
 
 
 
