@@ -1,0 +1,7 @@
+streamlit
+pandas
+plotly.express
+joblib
+RandomForestClassifier
+train_test_split
+os
